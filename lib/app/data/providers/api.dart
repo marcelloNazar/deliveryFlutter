@@ -1,8 +1,19 @@
+import 'dart:convert';
+
+import 'package:app_delivery/app/data/moldels/adress.dart';
+import 'package:app_delivery/app/data/moldels/city.dart';
 import 'package:app_delivery/app/data/moldels/store.dart';
+import 'package:app_delivery/app/data/moldels/user.dart';
+import 'package:app_delivery/app/data/moldels/user_login_request.dart';
+import 'package:app_delivery/app/data/moldels/user_login_response.dart';
+import 'package:app_delivery/app/data/services/storage/service.dart';
+import 'package:get/get.dart';
 import 'package:get/get_connect/connect.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 
 class Api extends GetConnect {
+  final _storageService = Get.find<StorageService>();
+
   @override
   void onInit() {
     httpClient.baseUrl = 'https://dev.hortifruti.174.138.42.25.getmoss.site/';
@@ -14,7 +25,50 @@ class Api extends GetConnect {
       return request;
     });
 
+    httpClient.addAuthenticator((Request request) {
+      var token = _storageService.token;
+      var headers = {'Authorization': "Bearer $token"};
+
+      request.headers.addAll(headers);
+
+      return request;
+    });
+
     super.onInit();
+  }
+
+  Future<List<CityModel>> getCities() async {
+    var response = _errorHandler(await get('cidades'));
+
+    List<CityModel> data = [];
+    for (var city in response.body) {
+      data.add(CityModel.fromJson(city));
+    }
+
+    return data;
+  }
+
+  Future<UserLoginResponseModel> login(UserLoginRequestModel data) async {
+    var response = _errorHandler(await post('login', jsonEncode(data)));
+
+    return UserLoginResponseModel.fromJson(response.body);
+  }
+
+  Future<UserModel> getUser() async {
+    var response = _errorHandler(await get('auth/me'));
+
+    return UserModel.fromJson(response.body);
+  }
+
+  Future<List<AddressModel>> getUserAddresses() async {
+    var response = _errorHandler(await get('enderecos'));
+
+    List<AddressModel> data = [];
+    for (var address in response.body) {
+      data.add(AddressModel.fromJson(address));
+    }
+
+    return data;
   }
 
   Future<List<StoreModel>> getStores() async {
@@ -35,7 +89,7 @@ class Api extends GetConnect {
   }
 
   Response _errorHandler(Response response) {
-    print(response.bodyString);
+    print(response.body);
 
     switch (response.statusCode) {
       case 200:
@@ -43,7 +97,7 @@ class Api extends GetConnect {
       case 204:
         return response;
       default:
-        throw 'Ocorreu um erro';
+        return response;
     }
   }
 }
