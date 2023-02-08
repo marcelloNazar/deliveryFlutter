@@ -1,4 +1,4 @@
-import 'package:app_delivery/app/data/moldels/adress.dart';
+import 'package:app_delivery/app/data/moldels/address.dart';
 import 'package:app_delivery/app/data/providers/api.dart';
 
 class CheckoutRepository {

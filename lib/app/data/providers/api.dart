@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import 'package:app_delivery/app/data/moldels/adress.dart';
+import 'package:app_delivery/app/data/moldels/address.dart';
 import 'package:app_delivery/app/data/moldels/city.dart';
 import 'package:app_delivery/app/data/moldels/store.dart';
 import 'package:app_delivery/app/data/moldels/user.dart';
+import 'package:app_delivery/app/data/moldels/user_address_request.dart';
 import 'package:app_delivery/app/data/moldels/user_login_request.dart';
 import 'package:app_delivery/app/data/moldels/user_login_response.dart';
 import 'package:app_delivery/app/data/services/storage/service.dart';
@@ -71,6 +72,10 @@ class Api extends GetConnect {
     return data;
   }
 
+  Future<void> postAddress(UserAddressRequestModel data) async {
+    _errorHandler(await post('enderecos', jsonEncode(data)));
+  }
+
   Future<List<StoreModel>> getStores() async {
     var response = _errorHandler(await get('cidades/1/estabelecimentos'));
 
@@ -89,7 +94,7 @@ class Api extends GetConnect {
   }
 
   Response _errorHandler(Response response) {
-    print(response.body);
+    print(response.bodyString);
 
     switch (response.statusCode) {
       case 200:
@@ -97,7 +102,7 @@ class Api extends GetConnect {
       case 204:
         return response;
       default:
-        return response;
+        throw 'Ocorreu um erro';
     }
   }
 }

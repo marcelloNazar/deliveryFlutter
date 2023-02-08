@@ -1,4 +1,4 @@
-import 'package:app_delivery/app/data/moldels/adress.dart';
+import 'package:app_delivery/app/data/moldels/address.dart';
 import 'package:app_delivery/app/data/moldels/payment.dart';
 import 'package:app_delivery/app/data/moldels/shipping_by_city.dart';
 import 'package:app_delivery/app/data/services/auth/service.dart';

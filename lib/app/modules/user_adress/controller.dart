@@ -1,4 +1,5 @@
 import 'package:app_delivery/app/data/moldels/city.dart';
+import 'package:app_delivery/app/data/moldels/user_address_request.dart';
 import 'package:app_delivery/app/data/services/auth/service.dart';
 import 'package:app_delivery/app/modules/user_adress/repository.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ class UserAddressController extends GetxController
   final UserAddressRepository _repository;
 
   UserAddressController(this._repository);
+
   final _authService = Get.find<AuthService>();
   var streetController = TextEditingController(text: 'Rua A');
   var numberController = TextEditingController(text: '10');
@@ -28,7 +30,23 @@ class UserAddressController extends GetxController
     super.onInit();
   }
 
-  void submit() {}
+  void submit() {
+    var userAddressRequest = UserAddressRequestModel(
+      street: streetController.text,
+      number: numberController.text,
+      neighborhood: neighborhoodController.text,
+      referencePoint: referencePointController.text,
+      cityId: cityId.value!,
+      complement: complementController.text,
+    );
+
+    _repository.postAddress(userAddressRequest).then((value) {
+      ScaffoldMessenger.of(Get.overlayContext!).showSnackBar(
+          const SnackBar(content: Text('Um novo endereço foi cadastrado')));
+    },
+        onError: (error) =>
+            Get.dialog(AlertDialog(title: Text(error.toString()))));
+  }
 
   void changeCity(int? cityIdSelected) {
     cityId.value = cityIdSelected;
